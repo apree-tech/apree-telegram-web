@@ -1,0 +1,12 @@
+services:
+  web:
+    build: .
+    container_name: apree-telegram-web
+    ports:
+      - "8505:80"
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
