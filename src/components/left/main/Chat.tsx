@@ -1,6 +1,8 @@
 import type { FC } from '../../../lib/teact/teact';
 import { memo, useEffect, useMemo } from '../../../lib/teact/teact';
 import { getActions, withGlobal } from '../../../global';
+import { isInCrmFrame } from '../../../util/crmBridge';
+import { getChatCategory, getDealForChat } from '../../../util/crmDataService';
 
 import type {
   ApiChat,
@@ -465,6 +467,31 @@ const Chat: FC<OwnProps & StateProps> = ({
             observeIntersection={observeIntersection}
             withStatusTextColor={isSelected}
           />
+          {isInCrmFrame() && (() => {
+            const chatIdNum = Number(chatId);
+            const category = getChatCategory(chatIdNum);
+            const deal = getDealForChat(chatIdNum);
+            return (
+              <>
+                {category && (
+                  <span
+                    className="crm-badge"
+                    style={`background: ${category.category === 'consulting' ? '#10b981' : category.category === 'model_acquisition' ? '#8b5cf6' : '#6b7280'}; color: #fff; font-size: 0.5625rem; padding: 0 0.25rem; border-radius: 0.25rem; margin-inline-start: 0.25rem; white-space: nowrap`}
+                  >
+                    {category.category === 'consulting' ? 'К' : category.category === 'model_acquisition' ? 'М' : '?'}
+                  </span>
+                )}
+                {deal && (
+                  <span
+                    className="crm-deal-badge"
+                    style={`background: ${deal.stageColor}; color: #fff; font-size: 0.5625rem; padding: 0 0.25rem; border-radius: 0.25rem; margin-inline-start: 0.125rem; white-space: nowrap`}
+                  >
+                    {deal.stageName.length > 8 ? `${deal.stageName.substring(0, 8)}…` : deal.stageName}
+                  </span>
+                )}
+              </>
+            );
+          })()}
           {isMuted && !isSavedDialog && <Icon name="muted" />}
           <div className="separator" />
           {lastMessage && (

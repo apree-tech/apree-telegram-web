@@ -9,6 +9,7 @@ import { SettingsScreens } from '../types';
 
 import { ALL_FOLDER_ID } from '../config';
 import { selectCanShareFolder } from '../global/selectors';
+import { isFolderAllowedForRole, isInCrmFrame } from '../util/crmBridge';
 import { MEMO_EMPTY_ARRAY } from '../util/memo';
 import { renderTextWithEntities } from '../components/common/helpers/renderTextWithEntities';
 import useAppLayout from './useAppLayout';
@@ -76,15 +77,24 @@ const useFolderTabs = (params: Params) => {
   }, [orderedFolderIds, lang]);
 
   const displayedFolders = useMemo(() => {
-    return orderedFolderIds
-      ? orderedFolderIds.map((id) => {
-        if (id === ALL_FOLDER_ID) {
-          return allChatsFolder;
-        }
+    if (!orderedFolderIds) return undefined;
 
-        return chatFoldersById[id] || {};
-      }).filter(Boolean)
-      : undefined;
+    let folders = orderedFolderIds.map((id) => {
+      if (id === ALL_FOLDER_ID) {
+        return allChatsFolder;
+      }
+      return chatFoldersById[id] || {};
+    }).filter(Boolean);
+
+    // CRM role-based folder filtering
+    if (isInCrmFrame()) {
+      folders = folders.filter((folder) => {
+        if (folder.id === ALL_FOLDER_ID) return true; // Always show "All Chats"
+        return isFolderAllowedForRole(folder.title?.text || '');
+      });
+    }
+
+    return folders;
   }, [chatFoldersById, allChatsFolder, orderedFolderIds]);
 
   const folderUnreadChatsCountersById = useFolderManagerForUnreadChatsByFolder();

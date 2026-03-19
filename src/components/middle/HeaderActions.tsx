@@ -42,6 +42,8 @@ import { useHotkeys } from '../../hooks/useHotkeys';
 import useLang from '../../hooks/useLang';
 import useLastCallback from '../../hooks/useLastCallback';
 import useOldLang from '../../hooks/useOldLang';
+import { isInCrmFrame, sendCreateDeal, sendOpenDeal } from '../../util/crmBridge';
+import { getDealForChat } from '../../util/crmDataService';
 
 import CustomEmoji from '../common/CustomEmoji';
 import Button from '../ui/Button';
@@ -435,6 +437,36 @@ const HeaderActions: FC<OwnProps & StateProps> = ({
           ariaLabel={isChannel ? oldLang('SubscribeRequests') : oldLang('MemberRequests')}
         >
           <div className="badge">{pendingJoinRequests}</div>
+        </Button>
+      )}
+      {isInCrmFrame() && (
+        <Button
+          round
+          color="translucent"
+          size="smaller"
+          onClick={() => {
+            const chatIdNum = Number(chatId);
+            const deal = getDealForChat(chatIdNum);
+            if (deal) {
+              sendOpenDeal(deal.dealId, chatId);
+            } else {
+              sendCreateDeal(
+                document.querySelector('.ChatInfo .title')?.textContent || chatId,
+                chatIdNum,
+              );
+            }
+          }}
+          ariaLabel="CRM Deal"
+          iconName="document"
+        >
+          {getDealForChat(Number(chatId)) && (
+            <div
+              className="badge"
+              style={`background: ${getDealForChat(Number(chatId))!.stageColor}`}
+            >
+              {getDealForChat(Number(chatId))!.stageName.substring(0, 3)}
+            </div>
+          )}
         </Button>
       )}
       <Button

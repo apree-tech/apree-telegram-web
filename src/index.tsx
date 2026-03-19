@@ -1,6 +1,8 @@
 import './util/handleError';
 import './util/setupServiceWorker';
 import './global/init';
+import { initCrmBridge, isInCrmFrame } from './util/crmBridge';
+import { initCrmDataService } from './util/crmDataService';
 
 import TeactDOM from './lib/teact/teact-dom';
 import {
@@ -41,6 +43,9 @@ if (IS_TAURI) {
   setupTauriListeners();
 }
 
+// Initialize CRM bridge before anything else
+initCrmBridge();
+
 init();
 
 async function init() {
@@ -66,6 +71,11 @@ async function init() {
 
   await initGlobal();
   getActions().init();
+
+  // Start CRM data polling if inside CRM iframe
+  if (isInCrmFrame()) {
+    initCrmDataService();
+  }
 
   getActions().updateShouldEnableDebugLog();
   getActions().updateShouldDebugExportedSenders();
