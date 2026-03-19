@@ -173,8 +173,8 @@ export function sendCreateDeal(chatTitle: string, telegramChatId: number, tgUser
   sendToParent('tg:createDeal', { chatTitle, telegramChatId, tgUsername });
 }
 
-export function sendChatOpened(chatId: string, telegramChatId?: number) {
-  sendToParent('tg:chatOpened', { chatId, telegramChatId });
+export function sendChatOpened(chatId: string, telegramChatId?: number, tgUsername?: string) {
+  sendToParent('tg:chatSelected', { chatId, telegramChatId, tgUsername });
 }
 
 export { initCrmBridge };

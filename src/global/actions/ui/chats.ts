@@ -4,6 +4,7 @@ import { MAIN_THREAD_ID } from '../../../api/types';
 
 import { getCurrentTabId } from '../../../util/establishMultitabRole';
 import { createMessageHashUrl } from '../../../util/routing';
+import { sendChatOpened } from '../../../util/crmBridge';
 import { addActionHandler, execAfterActions, getGlobal, setGlobal } from '../../index';
 import {
   closeMiddleSearch,
@@ -90,6 +91,12 @@ addActionHandler('processOpenChatOrThread', (global, actions, payload): ActionRe
   }
 
   actions.updatePageTitle({ tabId });
+
+  if (chatId) {
+    const chat = selectChat(global, chatId);
+    const tgUsername = chat?.usernames?.[0]?.username;
+    sendChatOpened(chatId, Number(chatId) || undefined, tgUsername);
+  }
 
   return updateCurrentMessageList(global, chatId, threadId, type, shouldReplaceHistory, shouldReplaceLast, tabId);
 });
