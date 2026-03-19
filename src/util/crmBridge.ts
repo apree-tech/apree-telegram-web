@@ -1,6 +1,6 @@
 import { createCallbackManager } from './callbacks';
 
-const CRM_PARENT_ORIGIN = 'https://reports.apree-tech.com';
+const CRM_PARENT_ORIGIN = 'https://crm.apree-tech.com';
 const CRM_API_URL = 'https://crm-api.apree-tech.com/api/v1';
 
 // Detect CRM mode immediately at module load time (before any component renders)
