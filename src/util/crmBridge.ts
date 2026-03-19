@@ -3,6 +3,18 @@ import { createCallbackManager } from './callbacks';
 const CRM_PARENT_ORIGIN = 'https://reports.apree-tech.com';
 const CRM_API_URL = 'https://crm-api.apree-tech.com/api/v1';
 
+// Detect CRM mode immediately at module load time (before any component renders)
+const CRM_MODE = (() => {
+  try {
+    // Check hash first (most reliable)
+    if (window.location.hash.includes('crm')) return true;
+    // Check if in iframe
+    return window.self !== window.top;
+  } catch {
+    return true; // cross-origin iframe = true
+  }
+})();
+
 // Folder name patterns per CRM role (case-insensitive matching)
 const FOLDER_ROLE_MAP: Record<string, string[]> = {
   consulting_manager: ['консалтинг', 'consulting', 'рабочие', 'work', 'каналы', 'channels'],
@@ -120,7 +132,7 @@ export function getCrmUserName(): string | undefined {
 }
 
 export function isInCrmFrame(): boolean {
-  return state.isInCrmFrame;
+  return CRM_MODE;
 }
 
 export function getCrmApiUrl(): string {

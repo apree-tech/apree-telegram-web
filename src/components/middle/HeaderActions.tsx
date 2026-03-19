@@ -462,9 +462,9 @@ const HeaderActions: FC<OwnProps & StateProps> = ({
           {getDealForChat(Number(chatId)) && (
             <div
               className="badge"
-              style={`background: ${getDealForChat(Number(chatId))!.stageColor}`}
+              style={`background: ${getDealForChat(Number(chatId)).stageColor}`}
             >
-              {getDealForChat(Number(chatId))!.stageName.substring(0, 3)}
+              {getDealForChat(Number(chatId)).stageName.substring(0, 3)}
             </div>
           )}
         </Button>
